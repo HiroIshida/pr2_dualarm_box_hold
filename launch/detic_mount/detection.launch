@@ -104,6 +104,39 @@
       </rosparam>
     </node>
 
+    <node name="attension_clipper" pkg="nodelet" type="nodelet"
+      args="$(arg LOAD_STATEMENT) jsk_pcl/AttentionClipper $(arg MANAGER)"
+      output="screen">
+      <remap from="~input/points" to="depth_registered/points"/>
+      <rosparam>
+        use_multiple_attention: false
+        dimension_x: 1.0
+        dimension_y: 1.0
+        dimension_z: 1.2
+        initial_pos: [0.5, 0.0, 0.7]
+      </rosparam>
+      <param name="frame_id" value="base_link" />
+    </node>
+
+    <node name="ExtractIndices" pkg="nodelet" type="nodelet"
+      args="$(arg LOAD_STATEMENT) jsk_pcl/ExtractIndices $(arg MANAGER)"
+      output="screen">
+      <remap from="~input" to="depth_registered/points"/>
+      <remap from="~indices" to="attension_clipper/output/point_indices"/>
+      <rosparam>
+        keep_organized: true
+      </rosparam>
+    </node>
+
+    <!--see https://github.com/jsk-ros-pkg/jsk_demos/blob/525607131711ad9ad1420d7b05e458408a9b70af/detect_cans_in_fridge_201202/launch/grasp_object_extract.launch#L21 -->
+    <node pkg="robot_self_filter" type="self_filter" name="robot_self_filter">
+      <remap from="cloud_in" to="ExtractIndices/output"/>
+      <remap from="cloud_out" to="self_filtered_cloud" />
+      <remap from="robot_description" to="/robot_description"/>
+      <param name="sensor_frame" type="string" value="base_footprint"/>
+      <!--rosparam file="$(find detic_ros)/launch/self_filter.yaml" command="load" /-->
+    </node>
+
   </group>
 
 </launch>
