@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 import numpy as np
-import pickle
-import rospy
-from sensor_msgs.msg import PointCloud2
-from geometry_msgs.msg import Pose, Point, Quaternion, PoseStamped, PoseArray
-import sensor_msgs.point_cloud2 as pc2
 import ros_numpy
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from utils import PlanerBoundingBox
+import rospy
+from geometry_msgs.msg import Point, Pose, PoseArray, Quaternion
 from jsk_recognition_msgs.msg import BoundingBox
-from skrobot.coordinates.math import rpy2quaternion, matrix2quaternion, wxyz2xyzw
+from sensor_msgs.msg import PointCloud2
 from skrobot.coordinates import Coordinates
+from skrobot.coordinates.math import matrix2quaternion, rpy2quaternion, wxyz2xyzw
+from utils import PlanerBoundingBox
 
-
-rospy.init_node('pointcloud_subscriber', anonymous=True)
+rospy.init_node("pointcloud_subscriber", anonymous=True)
 pub_box = rospy.Publisher("detected_box", BoundingBox, queue_size=100)
 pub_reaching_poses = rospy.Publisher("reaching_poses", PoseArray, queue_size=100)
 
@@ -52,8 +47,8 @@ def pointcloud_callback(msg: PointCloud2):
 
     print("published")
 
-    table_ex = np.array([1., 0, 0])
-    table_ey = np.array([0, 1., 0])
+    table_ex = np.array([1.0, 0, 0])
+    table_ey = np.array([0, 1.0, 0])
 
     box_extent = [box.dimensions.x, box.dimensions.y, box.dimensions.z]
     co_box = Coordinates([pose.position.x, pose.position.y, pose.position.z])
@@ -82,7 +77,7 @@ def pointcloud_callback(msg: PointCloud2):
         right_co = Coordinates(pos=pos_target1, rot=co_box.rotation)
         left_co = Coordinates(pos=pos_target2, rot=co_box.rotation)
 
-    pose_array = PoseArray(header = msg.header)
+    pose_array = PoseArray(header=msg.header)
     pose_array.poses.append(skcoords_to_rospose(right_co))
     pose_array.poses.append(skcoords_to_rospose(left_co))
     pub_reaching_poses.publish(pose_array)

@@ -1,5 +1,5 @@
-from skrobot.models.pr2 import PR2
 from skrobot.interfaces.ros.pr2 import PR2ROSRobotInterface
+from skrobot.models.pr2 import PR2
 
 model = PR2()
 model.reset_manip_pose()
