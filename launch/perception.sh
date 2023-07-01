@@ -5,5 +5,6 @@ rosrun detic_ros run_container.py -host pr1040 -mount ./detic_mount -name detect
     output_highest:=false \
     confidence_threshold:=0.5 \
     vocabulary:=custom \
+    device:=cpu \
     custom_vocabulary:=cigarette_case,checkbook,notebook,box \
     input_image:=/kinect_head/rgb/image_color
